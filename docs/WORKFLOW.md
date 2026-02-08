@@ -9,19 +9,43 @@ The workflow:
 - Posts a single structured comment on the PR with the verdict and findings
 - Optionally fails the CI job if changes are required
 
-## Usage in a Project
+## Usage as a reusable workflow
 
-1. **Workflow Placement**: Copy `skill-review.yml` to `.github/workflows/` in your repository.
+Add a thin caller workflow to your repository (`.github/workflows/skill-review.yml`):
 
-2. **Required Secrets**:
-   - `ANTHROPIC_API_KEY`: API key for Claude (Anthropic). Set this in your repository's Settings > Secrets.
+```yaml
+name: Skill Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  skill-review:
+    uses: decebals/skill-review/.github/workflows/skill-review.yml@main
+    secrets:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
 
-3. **Environment Variables** (configured in the workflow file):
-   - `SKILLS_REPO`: GitHub repository containing skill definitions. Default: `decebals/claude-code-java`.
-   - `ENFORCE_BEHAVIOR`: `informative` (default, comment only) or `strict` (fail CI on CHANGES_REQUIRED).
+To customize:
 
-4. **Trigger Events**:
-   - Pull request events: opened, synchronize, reopened.
+```yaml
+    uses: decebals/skill-review/.github/workflows/skill-review.yml@main
+    with:
+      skills_repo: 'your-org/your-skills'
+      enforce_behavior: 'strict'
+    secrets:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+### Inputs
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| `skills_repo` | `decebals/claude-code-java` | Skills repository (`owner/repo`) |
+| `enforce_behavior` | `informative` | `informative` (comment only) or `strict` (fail CI) |
+
+### Required secrets
+
+- `ANTHROPIC_API_KEY`: API key for Claude (Anthropic). Set in Settings > Secrets.
 
 ## How it works
 

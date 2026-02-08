@@ -34,6 +34,8 @@ Write verdict to verdict.txt
 
 The workflow uses [`anthropics/claude-code-action@v1`](https://github.com/anthropics/claude-code-action), the official Anthropic GitHub Action. This eliminates the need for manual CLI installation, prompt file construction, or output parsing.
 
+The workflow supports both direct use (via `pull_request` trigger) and as a reusable workflow (via `workflow_call`). Other repositories can call it with a thin caller workflow — no need to copy the prompt or validation logic.
+
 Claude is given a structured prompt with 7 steps:
 1. Clone the skills repository
 2. Discover all `SKILL.md` files

@@ -3,10 +3,24 @@ name: Skill Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_call:
+    inputs:
+      skills_repo:
+        description: 'Skills repository (owner/repo)'
+        type: string
+        default: 'decebals/claude-code-java'
+      enforce_behavior:
+        description: 'Enforcement mode: informative or strict'
+        type: string
+        default: 'informative'
+    secrets:
+      anthropic_api_key:
+        description: 'Anthropic API key for Claude'
+        required: true
 
 env:
-  SKILLS_REPO: decebals/claude-code-java
-  ENFORCE_BEHAVIOR: informative
+  SKILLS_REPO: ${{ inputs.skills_repo || 'decebals/claude-code-java' }}
+  ENFORCE_BEHAVIOR: ${{ inputs.enforce_behavior || 'informative' }}
 
 jobs:
   skill-review:
@@ -29,7 +43,7 @@ jobs:
 
       - uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: ${{ secrets.anthropic_api_key || secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
           claude_args: |

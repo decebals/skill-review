@@ -139,23 +139,25 @@ It operates at a different level: standards governance, not code analysis.
 
 ---
 
-### How it works (current implementation)
+### How to use it
 
-The workflow uses [`anthropics/claude-code-action@v1`](https://github.com/anthropics/claude-code-action) to run Claude as a GitHub Actions step. Claude autonomously:
+Add this workflow to your repository (`.github/workflows/skill-review.yml`):
 
-1. Clones a skills repository (configurable)
-2. Discovers and reads all skill files
-3. Gets the PR diff
-4. Evaluates the changes against the loaded skills
-5. Posts a structured review comment on the PR
-6. Writes a verdict file for CI decisions
+```yaml
+name: Skill Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  skill-review:
+    uses: decebals/skill-review/.github/workflows/skill-review.yml@main
+    secrets:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
 
-Two enforcement modes: `informative` (advisory comment) or `strict` (fail CI on violations).
+That's it. Every PR will be reviewed against the skills in [`claude-code-java`](https://github.com/decebals/claude-code-java). You can point to your own skills repo and choose between `informative` (advisory) or `strict` (fail CI) mode.
 
-See [docs/WORKFLOW.md](docs/WORKFLOW.md) for full details and [docs/TECHNICAL_DETAILS.md](docs/TECHNICAL_DETAILS.md) for design decisions.
-
-> **Note**: The current implementation is a working prototype.
-> A reusable GitHub Action (installable via Marketplace) is planned. See [docs/ROADMAP.md](docs/ROADMAP.md).
+See [docs/WORKFLOW.md](docs/WORKFLOW.md) for full configuration options and [docs/TECHNICAL_DETAILS.md](docs/TECHNICAL_DETAILS.md) for design decisions.
 ---
 
 ### Who this is for

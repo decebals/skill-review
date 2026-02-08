@@ -12,7 +12,7 @@
 
 Turn the prototype into something others can adopt without reading the source.
 
-- [ ] Convert from copy-paste workflow to a **reusable GitHub Action** (composite action)
+- [x] Convert from copy-paste workflow to a **reusable workflow** (via `workflow_call`)
 - [ ] Publish on GitHub Marketplace
 - [ ] Support configurable inputs: skills repo, enforcement mode, LLM model, skill filter
 - [ ] Add a `setup` guide: "from zero to working AI review in 10 minutes"
