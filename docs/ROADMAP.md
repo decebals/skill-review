@@ -3,6 +3,7 @@
 ## Phase 1: Validate end-to-end
 
 - [ ] Test with a real PR on a real repository
+- [x] Add input validation: `SKILLS_REPO` format is validated before invoking Claude
 - [ ] Add error handling: skills repo unreachable, empty diff, Claude failure
 
 **Exit criteria**: A PR on a test repository gets a meaningful AI review comment based on skills.

@@ -25,6 +25,14 @@ The workflow:
 
 ## How it works
 
+The workflow has three stages:
+
+**1. Validate inputs**
+
+Before invoking Claude, the workflow validates that `SKILLS_REPO` matches the expected `owner/repo` format. If not, the job fails immediately with a clear error message.
+
+**2. Run Claude review**
+
 The workflow uses [`anthropics/claude-code-action@v1`](https://github.com/anthropics/claude-code-action) to run Claude with a structured prompt. Claude autonomously:
 
 1. Clones the skills repository
@@ -35,7 +43,9 @@ The workflow uses [`anthropics/claude-code-action@v1`](https://github.com/anthro
 6. Posts a structured review comment with verdict, summary, findings, and skills evaluated
 7. Writes the verdict (`APPROVED` or `CHANGES_REQUIRED`) to `verdict.txt`
 
-In **strict mode**, a subsequent workflow step reads `verdict.txt` and fails the CI job if the verdict is `CHANGES_REQUIRED`.
+**3. Enforce verdict (strict mode only)**
+
+A subsequent workflow step reads `verdict.txt` and fails the CI job if the verdict is `CHANGES_REQUIRED`.
 
 ## Review comment format
 

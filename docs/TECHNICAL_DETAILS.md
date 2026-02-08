@@ -6,6 +6,9 @@
 PR opened/updated
     |
     v
+Validate SKILLS_REPO format (fail early if invalid)
+    |
+    v
 claude-code-action runs Claude with prompt
     |
     v
@@ -78,10 +81,10 @@ Two modes serve different needs:
 
 **Public repos only**: The skills repo is cloned via `git clone https://github.com/...` without authentication. Private skills repos are not supported.
 
-**Not yet tested end-to-end**: The workflow has been designed and implemented but not yet run against a real PR.
+**Not yet tested end-to-end**: The workflow has been designed and implemented but not yet validated against a real PR with real skills.
 
 ## Security considerations
 
-- `SKILLS_REPO` is interpolated into the prompt (not directly into a shell command). Claude executes the clone. However, the value should still be validated to prevent unexpected behavior.
+- `SKILLS_REPO` is validated against an `owner/repo` pattern before the workflow reaches Claude. The value is interpolated into the prompt (not directly into a shell command), and Claude executes the clone.
 - The PR diff is passed as part of the prompt. Malicious code in a PR could attempt prompt injection. The prompt includes instructions to only evaluate against skills and not follow meta-instructions in the diff.
 - `ANTHROPIC_API_KEY` is passed as a secret and should never appear in logs.
