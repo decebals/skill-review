@@ -9,7 +9,7 @@ env:
   ENFORCE_BEHAVIOR: informative
 
 jobs:
-  ai-review:
+  skill-review:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,6 +20,13 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Validate SKILLS_REPO format
+        run: |
+          if ! echo "${{ env.SKILLS_REPO }}" | grep -qE '^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$'; then
+            echo "Invalid SKILLS_REPO format: '${{ env.SKILLS_REPO }}'. Expected 'owner/repo'."
+            exit 1
+          fi
+
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -29,47 +36,54 @@ jobs:
             --allowedTools "Read,Write,Bash(git clone:*),Bash(find:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
 
           prompt: |
+            --- CONTEXT ---
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
             SKILLS REPO: ${{ env.SKILLS_REPO }}
             ENFORCE MODE: ${{ env.ENFORCE_BEHAVIOR }}
 
+            --- ROLE ---
             You are performing an automated code review.
             You MUST evaluate code strictly against predefined engineering skills.
             Do NOT invent new rules. Do NOT flag issues not covered by the skills.
 
+            --- STEPS ---
+
             STEP 1: Clone the skills repository.
-              git clone https://github.com/${{ env.SKILLS_REPO }} /tmp/skills
+            Run: git clone https://github.com/${{ env.SKILLS_REPO }} /tmp/skills
 
             STEP 2: Discover all skill files.
-              find /tmp/skills/.claude/skills -name "SKILL.md" -type f
+            Run: find /tmp/skills/.claude/skills -name "SKILL.md" -type f
 
             STEP 3: Read each SKILL.md file to understand the enforced standards.
 
-            STEP 4: Run `gh pr diff ${{ github.event.pull_request.number }}` to see the code changes.
+            STEP 4: Get the code changes.
+            Run: gh pr diff ${{ github.event.pull_request.number }}
 
             STEP 5: Evaluate the code changes against the loaded skills.
-              - Only flag violations of a specific skill
-              - Reference which skill each finding relates to
-              - Distinguish severity: critical (likely bug/security) vs improvement (best practice)
+            - Only flag violations of a specific skill
+            - Reference which skill each finding relates to
+            - Distinguish severity: critical (likely bug/security) vs improvement (best practice)
 
-            STEP 6: Post a single review comment using `gh pr comment ${{ github.event.pull_request.number }}`.
-              Use this format:
+            STEP 6: Post a single review comment.
+            Run: gh pr comment ${{ github.event.pull_request.number }}
 
-              **Verdict**: APPROVED or CHANGES_REQUIRED
+            Use this format:
 
-              **Summary**: 1-2 sentences.
+            **Verdict**: APPROVED or CHANGES_REQUIRED
 
-              **Findings** (if any):
-              - **[skill-name]**: description of violation and suggestion
+            **Summary**: 1-2 sentences.
 
-              **Skills evaluated**: list of skill names checked
+            **Findings** (if any):
+            - **[skill-name]**: description of violation and suggestion
 
-              If there are no violations, verdict is APPROVED.
-              Keep it professional and concise. No emojis.
+            **Skills evaluated**: list of skill names checked
 
-            STEP 7: Write the verdict (APPROVED or CHANGES_REQUIRED) to the file "verdict.txt" in the current directory.
-              Write ONLY the verdict word, nothing else.
+            If there are no violations, verdict is APPROVED.
+            Keep it professional and concise. No emojis.
+
+            STEP 7: Write the verdict to file.
+            Write ONLY the word APPROVED or CHANGES_REQUIRED to "verdict.txt". Nothing else.
 
       - name: Fail CI if changes required (strict mode)
         if: env.ENFORCE_BEHAVIOR == 'strict'
