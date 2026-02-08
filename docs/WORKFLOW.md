@@ -18,9 +18,6 @@ name: Skill Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-permissions:
-  contents: read
-  pull-requests: write
 jobs:
   skill-review:
     uses: decebals/skill-review/.github/workflows/skill-review.yml@main
@@ -49,6 +46,10 @@ To customize:
 ### Required secrets
 
 - `ANTHROPIC_API_KEY`: API key for Claude (Anthropic). Set in Settings > Secrets.
+
+### Permissions
+
+The workflow needs write access to pull requests (to post review comments). Make sure your repository has "Read and write permissions" enabled under Settings > Actions > General > Workflow permissions.
 
 ## How it works
 

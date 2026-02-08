@@ -148,15 +148,14 @@ name: Skill Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-permissions:
-  contents: read
-  pull-requests: write
 jobs:
   skill-review:
     uses: decebals/skill-review/.github/workflows/skill-review.yml@main
     secrets:
       anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
+
+> **Note**: Your repository needs "Read and write permissions" for workflows (Settings > Actions > General).
 
 That's it. Every PR will be reviewed against the skills in [`claude-code-java`](https://github.com/decebals/claude-code-java). You can point to your own skills repo and choose between `informative` (advisory) or `strict` (fail CI) mode.
 
