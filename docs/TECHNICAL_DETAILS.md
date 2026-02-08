@@ -83,8 +83,6 @@ Two modes serve different needs:
 
 **Public repos only**: The skills repo is cloned via `git clone https://github.com/...` without authentication. Private skills repos are not supported.
 
-**Not yet tested end-to-end**: The workflow has been designed and implemented but not yet validated against a real PR with real skills.
-
 ## Security considerations
 
 - `SKILLS_REPO` is validated against an `owner/repo` pattern before the workflow reaches Claude. The value is interpolated into the prompt (not directly into a shell command), and Claude executes the clone.
