@@ -1,0 +1,86 @@
+name: Skill Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  SKILLS_REPO: decebals/claude-code-java
+  ENFORCE_BEHAVIOR: informative
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          claude_args: |
+            --allowedTools "Read,Write,Bash(git clone:*),Bash(find:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            SKILLS REPO: ${{ env.SKILLS_REPO }}
+            ENFORCE MODE: ${{ env.ENFORCE_BEHAVIOR }}
+
+            You are performing an automated code review.
+            You MUST evaluate code strictly against predefined engineering skills.
+            Do NOT invent new rules. Do NOT flag issues not covered by the skills.
+
+            STEP 1: Clone the skills repository.
+              git clone https://github.com/${{ env.SKILLS_REPO }} /tmp/skills
+
+            STEP 2: Discover all skill files.
+              find /tmp/skills/.claude/skills -name "SKILL.md" -type f
+
+            STEP 3: Read each SKILL.md file to understand the enforced standards.
+
+            STEP 4: Run `gh pr diff ${{ github.event.pull_request.number }}` to see the code changes.
+
+            STEP 5: Evaluate the code changes against the loaded skills.
+              - Only flag violations of a specific skill
+              - Reference which skill each finding relates to
+              - Distinguish severity: critical (likely bug/security) vs improvement (best practice)
+
+            STEP 6: Post a single review comment using `gh pr comment ${{ github.event.pull_request.number }}`.
+              Use this format:
+
+              **Verdict**: APPROVED or CHANGES_REQUIRED
+
+              **Summary**: 1-2 sentences.
+
+              **Findings** (if any):
+              - **[skill-name]**: description of violation and suggestion
+
+              **Skills evaluated**: list of skill names checked
+
+              If there are no violations, verdict is APPROVED.
+              Keep it professional and concise. No emojis.
+
+            STEP 7: Write the verdict (APPROVED or CHANGES_REQUIRED) to the file "verdict.txt" in the current directory.
+              Write ONLY the verdict word, nothing else.
+
+      - name: Fail CI if changes required (strict mode)
+        if: env.ENFORCE_BEHAVIOR == 'strict'
+        run: |
+          if [ ! -f verdict.txt ]; then
+            echo "No verdict file found. Failing as precaution."
+            exit 1
+          fi
+          verdict=$(cat verdict.txt | tr -d '[:space:]')
+          echo "Review verdict: $verdict"
+          if [ "$verdict" = "CHANGES_REQUIRED" ]; then
+            echo "AI review requires changes. Failing CI."
+            exit 1
+          fi
