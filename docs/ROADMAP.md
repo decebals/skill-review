@@ -2,11 +2,11 @@
 
 ## Phase 1: Validate end-to-end
 
-- [ ] Test with a real PR on a real repository
+- [x] Test with a real PR on a real repository — see [skill-review-sandbox PR #1](https://github.com/decebals/skill-review-sandbox/pull/1)
 - [x] Add input validation: `SKILLS_REPO` format is validated before invoking Claude
 - [ ] Add error handling: skills repo unreachable, empty diff, Claude failure
 
-**Exit criteria**: A PR on a test repository gets a meaningful AI review comment based on skills.
+**Exit criteria**: A PR on a test repository gets a meaningful AI review comment based on skills. ✓ Done — see [sandbox PR #1](https://github.com/decebals/skill-review-sandbox/pull/1).
 
 ## Phase 2: Make it usable
 

@@ -161,6 +161,9 @@ jobs:
 That's it. Every PR will be reviewed against the skills in [`claude-code-java`](https://github.com/decebals/claude-code-java). You can point to your own skills repo and choose between `informative` (advisory) or `strict` (fail CI) mode.
 
 See [docs/WORKFLOW.md](docs/WORKFLOW.md) for full configuration options and [docs/TECHNICAL_DETAILS.md](docs/TECHNICAL_DETAILS.md) for design decisions.
+
+For a working example, see [`skill-review-sandbox`](https://github.com/decebals/skill-review-sandbox) — a minimal Java project with skill-review configured and a [real review comment](https://github.com/decebals/skill-review-sandbox/pull/1) posted by the workflow.
+
 ---
 
 ### Who this is for
