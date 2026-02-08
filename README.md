@@ -148,6 +148,9 @@ name: Skill Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   skill-review:
     uses: decebals/skill-review/.github/workflows/skill-review.yml@main
