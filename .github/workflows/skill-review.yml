@@ -68,7 +68,9 @@ jobs:
             Run: git clone https://github.com/${{ env.SKILLS_REPO }} /tmp/skills
 
             STEP 2: Discover all skill files.
-            Run: find /tmp/skills/.claude/skills -name "SKILL.md" -type f
+            Run: find /tmp/skills/skills /tmp/skills/.claude/skills -name "SKILL.md" -type f
+            Skills live in skills/ (Agent Plugins layout) or .claude/skills/ (older layout).
+            A repository usually has only one of them, so an error for the other path is expected.
 
             STEP 3: Read each SKILL.md file to understand the enforced standards.
 
