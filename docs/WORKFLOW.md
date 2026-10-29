@@ -18,6 +18,9 @@ name: Skill Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   skill-review:
     uses: decebals/skill-review/.github/workflows/skill-review.yml@main
@@ -49,7 +52,7 @@ To customize:
 
 ### Permissions
 
-The workflow needs write access to pull requests (to post review comments). Make sure your repository has "Read and write permissions" enabled under Settings > Actions > General > Workflow permissions.
+The workflow needs write access to pull requests (to post review comments). Grant it in the caller with the `permissions` block shown above. A called workflow cannot get more than its caller has, so without the block a repository with the default read-only token fails at startup (`startup_failure`), before any step runs. The block only affects this workflow, which is narrower than switching the whole repository to "Read and write permissions" under Settings > Actions > General.
 
 ## How it works
 
